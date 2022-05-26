@@ -109,6 +109,28 @@ func runTests(t *testing.T, fn func(t *testing.T, fn func() File)) {
 	})
 }
 
+// TestExistingEmpty tests calling New with an existing file.
+func TestExistingEmpty(t *testing.T) {
+	runTests(t, func(t *testing.T, fn func() File) {
+		testExistingEmpty(t, fn())
+	})
+}
+
+func testExistingEmpty(t *testing.T, f File) {
+	q1, err := New(f,
+		WithNoSync(),
+	)
+	if err != nil {
+		t.Fatal(err)
+	}
+	_, err = New(clone(t, q1),
+		WithNoSync(),
+	)
+	if err != nil {
+		t.Fatal(err)
+	}
+}
+
 // TestExisting tests calling New with an existing file.
 func TestExisting(t *testing.T) {
 	runTests(t, func(t *testing.T, fn func() File) {
