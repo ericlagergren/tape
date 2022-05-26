@@ -1,0 +1,7 @@
+github.com/bcmills/more v0.0.0-20220105151939-c9907ded6c5c h1:OP/BxM2t9PsBkdEFA3QtmuZIUOJkhLf1poc9HD7CwPw=
+github.com/bcmills/more v0.0.0-20220105151939-c9907ded6c5c/go.mod h1:J2M5xHKbGebeOWyu+4oF2gk/KnQ9ARgWELvKlSTcwWY=
+github.com/dsnet/try v0.0.3 h1:ptR59SsrcFUYbT/FhAbKTV6iLkeD6O18qfIWRml2fqI=
+github.com/dsnet/try v0.0.3/go.mod h1:WBM8tRpUmnXXhY1U6/S8dt6UWdHTQ7y8A5YSkRCkq40=
+golang.org/x/sync v0.0.0-20210220032951-036812b2e83c h1:5KslGYwFpkhGh+Q16bwMP3cOontH8FOep7tGV86Y7SQ=
+golang.org/x/sys v0.0.0-20220520151302-bc2c85ada10a h1:dGzPydgVsqGcTRVwiLJ1jVbufYwmzD3LfVPLKsKg+0k=
+golang.org/x/sys v0.0.0-20220520151302-bc2c85ada10a/go.mod h1:oPkhp1MJrh7nUepCBck5+mAzfO9JrbApNNgaTdGDITg=
