@@ -192,14 +192,15 @@ func New(f File, opts ...Option) (*Queue, error) {
 
 	// Empty file.
 	if n == 0 {
-		if err := truncate(f, o.size); err != nil {
-			return nil, err
-		}
-		return &Queue{
+		q := &Queue{
 			f:      f,
 			size:   o.size,
 			noSync: o.noSync,
-		}, nil
+		}
+		if err := q.init(); err != nil {
+			return nil, err
+		}
+		return q, nil
 	}
 
 	var h header
@@ -255,6 +256,18 @@ func readElem(f File, off, size int64) (elem, error) {
 		return elem{}, fmt.Errorf("element header is too large: %d", len)
 	}
 	return elem{off, int64(len)}, nil
+}
+
+// init initializes a new queue.
+func (q *Queue) init() error {
+	if err := truncate(q.f, q.size); err != nil {
+		return err
+	}
+	h := header{
+		version: 1,
+		size:    q.size,
+	}
+	return q.writeHeader(h)
 }
 
 // wrap returns the offset wrapped to the size of the file.
