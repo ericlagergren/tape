@@ -164,6 +164,14 @@ type qopts struct {
 	noSync bool  // disable syncing
 }
 
+// WithNoSync disables syncing the queue to permanent storge.
+//
+// This should only be set in tests to make the disk-based tests
+// quicker.
+func WithNoSync() Option {
+	return func(o *qopts) { o.noSync = true }
+}
+
 // WithSize configures the default allocation size for new files.
 func WithSize(n int64) Option {
 	return func(o *qopts) { o.size = n }
@@ -482,7 +490,7 @@ func (q *Queue) Add(data []byte) error {
 
 // Len returns the number of entries in the queue.
 func (q *Queue) Len() int {
-	return int(q.count)
+	return q.count
 }
 
 // Peek returns the first entry from the queue, but does not
@@ -598,6 +606,11 @@ func (q *Queue) Reset() error {
 	q.head = elem{}
 	q.tail = elem{}
 	return nil
+}
+
+// Size reports the size in bytes of the queue.
+func (q *Queue) Size() int64 {
+	return q.size
 }
 
 const (
