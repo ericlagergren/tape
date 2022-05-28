@@ -144,8 +144,8 @@ type File interface {
 
 var _ File = (*os.File)(nil)
 
-// Truncater is an optional interface used to reduce the size of
-// the File, if necessary.
+// Truncater is an optional interface used to grow or shrink the
+// size of the File as necessary.
 type Truncater interface {
 	Truncate(int64) error
 }
@@ -314,11 +314,10 @@ func (q *Queue) grow(n int) error {
 	if math.MaxInt64-int64(n) < elemHeaderSize {
 		panic("tape: element too large")
 	}
-	// n + elemHeaderSize won't overflow
-	need := elemHeaderSize + int64(n)
+	// elemHeaderSize + n won't overflow
 
-	used := q.used()
-	if m := q.size - used; m >= need {
+	need := elemHeaderSize + int64(n)
+	if q.avail() >= need {
 		// We have enough space.
 		return nil
 	}
@@ -328,6 +327,7 @@ func (q *Queue) grow(n int) error {
 	if newSize == 0 {
 		newSize = fileHeaderSize
 	}
+	used := q.used()
 	for newSize-used < need {
 		newSize *= 2
 		if newSize < 0 {
@@ -501,6 +501,25 @@ func (q *Queue) Add(data []byte) error {
 	return nil
 }
 
+// Available returns the number of bytes available for new queue
+// elements before growing.
+func (q *Queue) Available() int64 {
+	if m := q.avail(); m > elemHeaderSize {
+		return m
+	}
+	return 0
+}
+
+// Cap returns the total space allocated by the queue.
+func (q *Queue) Cap() int64 {
+	return q.size
+}
+
+// avail returns the number of bytes available.
+func (q *Queue) avail() int64 {
+	return q.size - q.used()
+}
+
 // Len returns the number of entries in the queue.
 func (q *Queue) Len() int {
 	return q.count
@@ -615,19 +634,22 @@ func (q *Queue) Reset() error {
 	if err := q.writeHeader(h); err != nil {
 		return err
 	}
+	q.size = fileHeaderSize
 	q.count = 0
 	q.head = elem{}
 	q.tail = elem{}
 	return nil
 }
 
-// Size reports the size in bytes of the queue.
+// Size reports the number of bytes being used by queue elements
+// and metadata.
 func (q *Queue) Size() int64 {
-	return q.size
+	return q.used()
 }
 
 const (
 	// fileHeaderSize is the size of the queue header.
+	//               v   s   c   h   t
 	fileHeaderSize = 4 + 8 + 4 + 8 + 8
 	// elemHeaderSize is the size of the element header.
 	elemHeaderSize = 8
