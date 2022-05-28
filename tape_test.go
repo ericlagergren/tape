@@ -39,13 +39,6 @@ func (q *Queue) String() string {
 	return fmt.Sprintf("%#x", buf)
 }
 
-// WithNoSync disables syncing the queue to permanent storge.
-//
-// This is set in tests to make the disk-based tests quicker.
-func WithNoSync() Option {
-	return func(o *qopts) { o.noSync = true }
-}
-
 // randbuf returns n random bytes.
 func randbuf(n int) []byte {
 	buf := make([]byte, n)
